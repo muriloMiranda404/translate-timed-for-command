@@ -6,11 +6,10 @@ package frc.robot;
 
 import java.io.File;
 
+import com.ctre.phoenix6.hardware.Pigeon2;
+import com.fasterxml.jackson.databind.util.Named;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
-import com.pathplanner.lib.commands.PathPlannerAuto;
-
-import choreo.auto.AutoChooser;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.XboxController;
@@ -20,15 +19,20 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import edu.wpi.first.wpilibj2.command.button.POVButton;
 import frc.robot.Constants.Controllers;
 import frc.robot.Constants.Outros;
 import frc.robot.Constants.Elevator.ElevatorPositions;
 import frc.robot.Constants.Intake.IntakePositions;
+import frc.robot.commands.AlingToTarget;
 import frc.robot.commands.ElevatorPositionCommand;
 import frc.robot.commands.IntakePositionCommand;
 import frc.robot.commands.IntakeSpeedCommand;
+import frc.robot.commands.ResetPigeon;
+import frc.robot.commands.TurnRobot;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.LimelightConfig;
 import frc.robot.subsystems.SwerveSubsystem;
 
 public class RobotContainer {
@@ -36,12 +40,14 @@ public class RobotContainer {
   private static final CommandXboxController DriveJoystick = new CommandXboxController(Controllers.DRIVE_CONTROLLER);
   private static final XboxController IntakeJoystick = new XboxController(Controllers.INTAKE_CONTROLLER);
 
+  private static final Pigeon2 pigeon2 = new Pigeon2(Outros.PIGEON);
+
   private static final SwerveSubsystem swerve = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "swerve"));
+  private static final LimelightConfig limelightConfig = LimelightConfig.getInstance();
   
   private static final IntakeSubsystem intake = IntakeSubsystem.getInstance();
   private static final ElevatorSubsystem elevator = ElevatorSubsystem.getInstance();
 
-  SendableChooser<Command> AutoChooser;
 
   public RobotContainer() {
 
@@ -54,11 +60,22 @@ public class RobotContainer {
     configureDriveBindings();
     configureIntakeBindings();
 
-    AutoChooser = AutoBuilder.buildAutoChooser();
-    SmartDashboard.putData("AutoChooser", AutoChooser);
   }
 
   private void configureDriveBindings() {
+
+    //limelight
+    NamedCommands.registerCommand("ALINHAMENTO", new AlingToTarget(limelightConfig, swerve, 0, 0));
+    new POVButton(DriveJoystick.getHID(), 270).whileTrue(NamedCommands.getCommand("ALINHAMENTO"));
+
+    //reset pigeon
+    NamedCommands.registerCommand("RESET PIGEON", new ResetPigeon(swerve, pigeon2));
+    new JoystickButton(DriveJoystick.getHID(), 9).onTrue(NamedCommands.getCommand("RESET PIGEON"));
+
+    //turn robot
+    NamedCommands.registerCommand("TURN ROBOT", new TurnRobot(swerve, pigeon2, 45));
+    new JoystickButton(DriveJoystick.getHID(), 10).onTrue(NamedCommands.getCommand("TURN ROBOT"));
+    
   }
   
   
