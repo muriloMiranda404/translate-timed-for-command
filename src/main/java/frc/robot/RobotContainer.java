@@ -134,7 +134,6 @@ public class RobotContainer {
 }
 
   public Command getAutonomousCommand() {
-    // Aqui retornamos o comando que está no selecionador
     return swerve.getAutonomousCommand(Outros.AUTO, true);
   }
 
