@@ -34,10 +34,11 @@ import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.LimelightConfig;
 import frc.robot.subsystems.SwerveSubsystem;
+import frc.robot.subsystems.utils.DriverController;
 
 public class RobotContainer {
 
-  private static final CommandXboxController DriveJoystick = new CommandXboxController(Controllers.DRIVE_CONTROLLER);
+  private static final DriverController DriveJoystick = new DriverController(Controllers.DRIVE_CONTROLLER);
   private static final XboxController IntakeJoystick = new XboxController(Controllers.INTAKE_CONTROLLER);
 
   private static final Pigeon2 pigeon2 = new Pigeon2(Outros.PIGEON);
@@ -52,9 +53,9 @@ public class RobotContainer {
   public RobotContainer() {
 
     swerve.setDefaultCommand(swerve.driveCommand(
-      () -> MathUtil.applyDeadband(DriveJoystick.getLeftY(), Controllers.DEADBAND), 
-      () -> MathUtil.applyDeadband(DriveJoystick.getLeftX(), Controllers.DEADBAND), 
-      () -> MathUtil.applyDeadband(DriveJoystick.getRightX(), Controllers.DEADBAND)));
+      () -> MathUtil.applyDeadband(DriveJoystick.ConfigureInputs(true, 1), Controllers.DEADBAND), 
+      () -> MathUtil.applyDeadband(DriveJoystick.ConfigureInputs(true, 2), Controllers.DEADBAND), 
+      () -> MathUtil.applyDeadband(DriveJoystick.ConfigureInputs(true, 3), Controllers.DEADBAND)));
 
 
     configureDriveBindings();
