@@ -20,9 +20,9 @@ public class DriverController extends CommandXboxController{
 
             marcha = gatilho;
 
-            // if(marcha <= 0){
-            //     marcha *= -1.0;
-            // }
+            if(marcha <= 0){
+                marcha *= -1.0;
+            }
 
             switch (choose) {
                 case 1:
