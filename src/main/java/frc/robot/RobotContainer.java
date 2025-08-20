@@ -4,27 +4,21 @@
 
 package frc.robot;
 
-import java.io.File;
-
 import com.ctre.phoenix6.hardware.Pigeon2;
 import com.pathplanner.lib.auto.NamedCommands;
+
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import edu.wpi.first.wpilibj2.command.button.POVButton;
 import frc.robot.Constants.Controllers;
 import frc.robot.Constants.Outros;
 import frc.robot.Constants.Elevator.ElevatorPositions;
 import frc.robot.Constants.Intake.IntakePositions;
-import frc.robot.commands.AlingToTarget;
 import frc.robot.commands.ElevatorPositionCommand;
 import frc.robot.commands.IntakePositionCommand;
 import frc.robot.commands.IntakeSpeedCommand;
-import frc.robot.commands.ResetPigeon;
-import frc.robot.commands.TurnRobot;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.LimelightConfig;
@@ -33,24 +27,26 @@ import frc.robot.subsystems.utils.DriverController;
 
 public class RobotContainer {
 
-  private static final DriverController DriveJoystick = new DriverController(Controllers.DRIVE_CONTROLLER);
-  private static final XboxController IntakeJoystick = new XboxController(Controllers.INTAKE_CONTROLLER);
+   DriverController DriveJoystick = new DriverController();
+   XboxController IntakeJoystick = new XboxController(Controllers.INTAKE_CONTROLLER);
 
-  private static final Pigeon2 pigeon2 = new Pigeon2(Outros.PIGEON);
+   XboxController dnwen = new XboxController(0);
 
-  private static final SwerveSubsystem swerve = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "swerve"));
-  private static final LimelightConfig limelightConfig = LimelightConfig.getInstance();
+   Pigeon2 pigeon2 = new Pigeon2(Outros.PIGEON);
+
+   SwerveSubsystem swerve = SwerveSubsystem.getInstance();
+   LimelightConfig limelightConfig = LimelightConfig.getInstance();
   
-  private static final IntakeSubsystem intake = IntakeSubsystem.getInstance();
-  private static final ElevatorSubsystem elevator = ElevatorSubsystem.getInstance();
+   IntakeSubsystem intake = IntakeSubsystem.getInstance();
+   ElevatorSubsystem elevator = ElevatorSubsystem.getInstance();
 
 
   public RobotContainer() {
 
     swerve.setDefaultCommand(swerve.driveCommand(
-      () -> MathUtil.applyDeadband(DriveJoystick.ConfigureInputs(true, 1), Controllers.DEADBAND), 
-      () -> MathUtil.applyDeadband(DriveJoystick.ConfigureInputs(true, 2), Controllers.DEADBAND), 
-      () -> MathUtil.applyDeadband(DriveJoystick.ConfigureInputs(true, 3), Controllers.DEADBAND)));
+      () -> MathUtil.applyDeadband(DriveJoystick.getLeftY(), Controllers.DEADBAND), 
+      () -> MathUtil.applyDeadband(DriveJoystick.getLeftX(), Controllers.DEADBAND), 
+      () -> MathUtil.applyDeadband(DriveJoystick.getRightX(), Controllers.DEADBAND)));
 
 
     configureDriveBindings();
@@ -60,17 +56,17 @@ public class RobotContainer {
 
   private void configureDriveBindings() {
 
-    //limelight
-    NamedCommands.registerCommand("ALINHAMENTO", new AlingToTarget(limelightConfig, swerve, 0, 0));
-    new POVButton(DriveJoystick.getHID(), 270).whileTrue(NamedCommands.getCommand("ALINHAMENTO"));
+    // //limelight
+    // NamedCommands.registerCommand("ALINHAMENTO", new AlingToTarget(limelightConfig, swerve, 0, 0));
+    // new POVButton(DriveJoystick.getHID(), 270).whileTrue(NamedCommands.getCommand("ALINHAMENTO"));
 
-    //reset pigeon
-    NamedCommands.registerCommand("RESET PIGEON", new ResetPigeon(swerve, pigeon2));
-    new JoystickButton(DriveJoystick.getHID(), 9).onTrue(NamedCommands.getCommand("RESET PIGEON"));
+    // //reset pigeon
+    // NamedCommands.registerCommand("RESET PIGEON", new ResetPigeon(swerve, pigeon2));
+    // new JoystickButton(DriveJoystick.getHID(), 9).onTrue(NamedCommands.getCommand("RESET PIGEON"));
 
-    //turn robot
-    NamedCommands.registerCommand("TURN ROBOT", new TurnRobot(swerve, pigeon2, 45));
-    new JoystickButton(DriveJoystick.getHID(), 10).onTrue(NamedCommands.getCommand("TURN ROBOT"));
+    // //turn robot
+    // NamedCommands.registerCommand("TURN ROBOT", new TurnRobot(swerve, pigeon2, 45));
+    // new JoystickButton(DriveJoystick.getHID(), 10).onTrue(NamedCommands.getCommand("TURN ROBOT"));
     
   }
   
